@@ -7,6 +7,11 @@ pub struct TemplateApp {
     tab: String,
     #[serde(skip)] // This how you opt-out of serialization of a field
     value: f32,
+    text1: String,
+    text2: String,
+    text3: String,
+    answer: String,
+
 }
 
 impl Default for TemplateApp {
@@ -16,6 +21,10 @@ impl Default for TemplateApp {
             tab: String::from("Start"),
             label: "Hello World!".to_owned(),
             value: 2.7,
+            text1: String::from("type here"),
+            text2: String::from("type here"),
+            text3: String::from("type here"),
+            answer: String::from("Answer: "),
         }
     }
 }
@@ -44,6 +53,9 @@ impl eframe::App for TemplateApp {
     }
 
     /// Called each time the UI needs repainting, which may be many times per second.
+
+
+
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
@@ -107,7 +119,27 @@ impl eframe::App for TemplateApp {
             } else if (self.tab == "Author") {
                 ui.heading("About the Author");
             } else if (self.tab == "Arithmetic") {
+
                 ui.heading("Arithmetic");
+                ui.vertical(|ui| {
+                    ui.horizontal(|ui| {
+                        ui.add(egui::Label::new("First Number Here"));
+                        ui.text_edit_singleline(&mut self.text1);
+                        ui.separator();
+                        ui.add(egui::Label::new("Second Number Here"));
+                        ui.text_edit_singleline(&mut self.text2);
+
+                    });
+                    ui.separator();
+                    ui.add(egui::Label::new("Operator Here"));
+                    ui.text_edit_singleline(&mut self.text3);
+                    ui.separator();
+                    ui.add(egui::Label::new(self.answer.clone()));
+                    ui.separator();
+                    if ui.button("ENTER").clicked() {
+                        self.answer = evaluate(&self.text3, &self.text1, &self.text2);
+                    }
+                });
             } else {
                 ui.heading("eframe template");
 
@@ -150,4 +182,22 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
         );
         ui.label(".");
     });
+}
+
+fn evaluate<'a>(operator: &'a str, mut box1: &'a str, box2: &'a str) -> String {
+    let binding: String = String::from("ERROR, ONE OR MORE VALUES ARE NOT VALID");
+    let error_message: &str = binding.as_str();
+    let mut num1: f64 = box1.parse::<f64>().expect(error_message);
+    let num2: f64 = box2.parse::<f64>().expect(error_message);
+    match operator {
+        "+" => num1 += num2,
+        "-" => num1 -= num2,
+        "*" => num1 *= num2,
+        "/" => num1 /= num2,
+        &_ => todo!()
+        //_ => return error_message,
+    }
+
+
+    return num1.to_string();
 }
