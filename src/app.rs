@@ -78,6 +78,7 @@ impl eframe::App for TemplateApp {
                     if ui.button("Arithmetic").clicked() {
                         self.tab = String::from("Arithmetic");
                     }
+                    if ui.button("Quad_solve").clicked() {}
                 });
                 ui.menu_button("Info", |ui| {
                     if ui.button("History").clicked() {
@@ -137,7 +138,7 @@ impl eframe::App for TemplateApp {
                     ui.add(egui::Label::new(self.answer.clone()));
                     ui.separator();
                     if ui.button("ENTER").clicked() {
-                        self.answer = evaluate(&self.text3, &self.text1, &self.text2);
+                        self.answer = evaluate_ar(&self.text3, &self.text1, &self.text2);
                     }
                 });
             } else {
@@ -184,17 +185,16 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
     });
 }
 
-fn evaluate<'a>(operator: &'a str, mut box1: &'a str, box2: &'a str) -> String {
-    let binding: String = String::from("ERROR, ONE OR MORE VALUES ARE NOT VALID");
-    let error_message: &str = binding.as_str();
-    let mut num1: f64 = box1.parse::<f64>().expect(error_message);
-    let num2: f64 = box2.parse::<f64>().expect(error_message);
+fn evaluate_ar<'a>(operator: &'a str, mut box1: &'a str, box2: &'a str) -> String {
+    let error: String = String::from("ERROR, ONE OR MORE VALUES ARE NOT VALID");
+    let mut num1: f64 = box1.parse::<f64>().expect(&error);
+    let num2: f64 = box2.parse::<f64>().expect(&error);
     match operator {
         "+" => num1 += num2,
         "-" => num1 -= num2,
         "*" => num1 *= num2,
         "/" => num1 /= num2,
-        &_ => todo!()
+        &_ => return error,
         //_ => return error_message,
     }
 
